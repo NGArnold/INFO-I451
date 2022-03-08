@@ -79,7 +79,7 @@ app.get("/images/add", function(req, res){
 //_______________________________________________________________________
 //Employee Value Route
 
-app.get("/employees/:num", function (req, res) {
+app.get("/employee/:num", function (req, res) {
     dataService.getEmployeeByNum(req.params.num)
     .then((data) => {
         res.json(data);

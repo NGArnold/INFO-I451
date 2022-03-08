@@ -25,7 +25,7 @@ module.exports.getEmployeeByNum = function (num) {
 };
 
 module.exports.getEmployeesByStatus = function (statusId) {
-    var locEmp;
+    var locEmp = [];
     var promise = new Promise((resolve, reject) => {
 
         for (var i = 0; i < employees.length; i++) {
@@ -45,7 +45,7 @@ module.exports.getEmployeesByStatus = function (statusId) {
 };
 
 module.exports.getEmployeesByDepartment = function (departmentId) {
-    var locEmp;
+    var locEmp = [];
     var promise = new Promise((resolve, reject) => {
 
         for (var i = 0; i < employees.length; i++) {
@@ -65,7 +65,7 @@ module.exports.getEmployeesByDepartment = function (departmentId) {
 };
 
 module.exports.getEmployeeByManager = function (managerBool) {
-    var locEmp;
+    var locEmp = [];
     var promise = new Promise((resolve, reject) => {
 
         for (var i = 0; i < employees.length; i++) {
