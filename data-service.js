@@ -64,7 +64,7 @@ module.exports.getEmployeesByDepartment = function (departmentId) {
     return promise;
 };
 
-module.exports.getEmployeeByManager = function (managerBool) {
+module.exports.getEmployeesByManager = function (managerBool) {
     var locEmp = [];
     var myTrue = managerBool == "true" ? true:false;
 
@@ -78,6 +78,27 @@ module.exports.getEmployeeByManager = function (managerBool) {
 
         if (locEmp.length === 0) {
             var err = "getEmployeesByManager() does not have any data.";
+            reject({message: err});
+        }
+
+    resolve (locEmp);
+    })
+    return promise;
+};
+
+module.exports.getEmployeesByManagerNum = function (managerID) {
+    var locEmp = [];
+
+    var promise = new Promise((resolve, reject) => {
+
+        for (var i = 0; i < employees.length; i++) {
+            if (employees[i].employeeManagerNum == managerID) {
+                locEmp.push(employees[i]);
+            }
+        }
+
+        if (locEmp.length === 0) {
+            var err = "getEmployeesByManagerNum() does not have any data.";
             reject({message: err});
         }
 
