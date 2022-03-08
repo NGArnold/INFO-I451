@@ -66,10 +66,12 @@ module.exports.getEmployeesByDepartment = function (departmentId) {
 
 module.exports.getEmployeeByManager = function (managerBool) {
     var locEmp = [];
+    var myTrue = managerBool == "true" ? true:false;
+
     var promise = new Promise((resolve, reject) => {
 
         for (var i = 0; i < employees.length; i++) {
-            if (employees[i].isManager == managerBool) {
+            if (employees[i].isManager === myTrue) {
                 locEmp.push(employees[i]);
             }
         }

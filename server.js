@@ -110,8 +110,8 @@ app.get("/employees", function(req, res){
                 res.json(err);
             })
     }
-    else if (req.query.isManager) {
-        dataService.getEmployeesByManager(req.query.isManager)
+    else if (req.query.manager) {
+        dataService.getEmployeeByManager(req.query.manager)
             .then((data) => {
                 res.json(data);
             })
