@@ -1,10 +1,16 @@
+// data-service
+
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-// connect to Your MongoDB Atlas Database
-mongoose.connect("");
 
+// connect to MDB Atlas Database
 
-const employeeSchema = new Schema({
+mongoose.connect("mongodb+srv://user1:admin@assignment4-cluster.eymrh.mongodb.net/Assignment4-Cluster?retryWrites=true&w=majority");
+
+// define schema
+
+const employeeSchema = new Schema ({
+
     employeeNum: Number,
     firstName: String,
     lastName: String,
@@ -19,204 +25,226 @@ const employeeSchema = new Schema({
     employeeManagerNum: Number,
     status: String,
     hireDate: String,
-    author: String,
-    department: Number
-});
+})
 
-const departmentSchema = new Schema({
+const departmentSchema = new Schema ({
+
     departmentId: Number,
-    departmentName: String
-});
+    departmentName: String,
+})
 
 const Employee = mongoose.model('Employee', employeeSchema);
 const Department = mongoose.model('Department', departmentSchema);
 
-module.exports.getAllEmployees = function () {
-    return new Promise((resolve, reject) => {
-
-        Employee.find({}).lean().exec()
-        .then((data) => {
-            resolve(data);
-        }).catch((error) => {
-            reject("No results returned.");
-        });
-    });
+module.exports.getAllEmployees = () => {
+    return new Promise((resolve,reject) => {
+       Employee.find({})
+        .lean()
+            .exec()
+                .then((data) => {
+                    resolve(data);
+                }) .catch((error) => {
+                        reject("Employee not found.");
+                });
+            });
 }
 
-module.exports.addEmployee = function (employeeData) {
+// addEmployee Function
+
+module.exports.addEmployee = (employeeData) => {
 
     employeeData.isManager = (employeeData.isManager) ? true : false;
-    employeeData.employeeNum = Math.floor(1000 + Math.random() * 8999);
+    employeeData.employeeNum = Math.floor(1000 + Math.random() * 2333);
 
-    return new Promise(function (resolve, reject) {
-
+    return new Promise((resolve, reject) => {
         for (const prop in employeeData) {
             if (employeeData[prop] == "") {
                 employeeData[prop] = null;
             }
-        }
-            Employee.create(employeeData)
+    }
+
+    Employee.create(employeeData)
+        .then(() => {
+            resolve();
+        })
+        .catch((error) => {
+            reject("Employee unable to be created.");
+        });
+});
+};
+
+// getEmployeeByNum Function
+
+module.exports.getEmployeeByNum = (num) => {
+
+   return new Promise((resolve, reject) => {
+        Employee.find({ employeeNum: num })
+            .lean()
+                .exec()
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((error) => {
+                        reject("No employees found by number.");
+                    });
+    });
+};
+
+// getEmployeeByStatus function
+
+module.exports.getEmployeeByStatus = (status) => {
+    
+    return new Promise((resolve, reject) => {
+        Employee.find({ status: status })
+            .lean()
+                .exec()
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((error) => {
+                        reject("No employee found by status.");
+                    });
+    });
+};
+
+//getEmployeeByDepartment function
+
+module.exports.getEmployeeByDepartment = (department) => {
+    
+    return new Promise((resolve, reject) => {
+        Employee.find({ department: department })
+            .lean()
+                .exec()
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((error) => {
+                        reject("Employee could not be found by department.");
+                    });
+    });
+};
+
+// getEmployeeByManager function
+
+module.exports.getEmployeeByManager = (manager) => {
+
+    return new Promise((resolve, reject) => {
+        Employee.find({ employeeManagerNum: manager })
+        .lean()
+            .exec()
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject("Employee could not be found by manager.");
+                });
+    });
+};
+
+// getManagers Function
+
+module.exports.getManagers = (isManager) => {
+
+    return new Promise((resolve, reject) => {
+        Employee.find({ isManager: isManager})
+            .lean()
+                .exec()
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((error) => {
+                        reject("No managers found.");
+                    });
+    });
+};
+
+// getDepartments Function
+
+module.exports.getDepartments = () => {
+
+    return new Promise((resolve, reject) => {
+        Department.find({})
+            .lean()
+                .exec()
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((error) => {
+                        reject("No departments found.");
+                    });
+    });
+};
+
+// updateEmployee Function
+
+module.exports.updateEmployee = (employeeData) => {
+
+    employeeData.isManager = (employeeData.isManager) ? true : false;
+    
+    return new Promise((resolve, reject) => {
+        for (const prop in employeeData) {
+            if (employeeData[prop] == "") {
+                employeeData[prop] = null;
+            }
+    }
+
+    Employee.updateOne({employeeNum: employeeData.employeeNum}, {firstName: employeeData.firstName}, {lastName: employeeData.lastName}, {email: employeeData.email}, {SSN: employeeData.SSN}, {addressStreet: employeeData.addressStreet}, {addressCity: employeeData.addressCity}, 
+        {addressState: employeeData.addressState}, {addressPostal: employeeData.addressPostal}, {maritalStatus: employeeData.maritalStatus}, {isManager: employeeData.isManager}, {employeeManagerNum: employeeData.employeeManagerNum}, {status: employeeData.status}, {hireDate: employeeData.hireDate})
+        .then(() => {
+            resolve();
+        })
+        .catch((error) => {
+            reject("Employee update failed.");
+        });
+});
+};
+
+module.exports.deleteEmployeeByNum = (delEmpNum) => {
+    return new Promise((resolve, reject) => {
+
+        Employee.deleteOne({ employeeNum: delEmpNum })
+        .exec()
             .then(() => {
                 resolve();
-            }).catch((error) => {
-                reject("Unable to create employee.");
-            });
+                })
+                .catch((error) => {
+                    reject("Unable to delete employee.");
+        });
     });
-    
 };
 
-
-module.exports.getEmployeeByNum = function (num) {
+module.exports.getDepartmentById = (id) => {
     return new Promise((resolve, reject) => {
 
-        Employee.find({ employeeNum: num }).lean().exec()
-        .then((data) => {
-            resolve(data[0]);
-
-        }).catch((error) => {
-            reject("No results returned.");
+        Department.find({ departmentId: id })
+        .lean()
+            .exec()
+                .then((data) => {
+                    resolve(data[0]);
+                })
+                .catch((error) => {
+                    reject("No results returned.");
         });
     });
 };
 
-module.exports.getEmployeesByStatus = function (status) {
-    return new Promise((resolve, reject) => {
-        
-        Employee.find({ status: status }).lean().exec()
-        .then((data) => {
-            resolve(data);
-
-        }).catch((error) => {
-            reject("No results returned.");
-        });
-    });
-};
-
-
-module.exports.getEmployeesByDepartment = function (department) {
+module.exports.deleteDepartmentById = (delId) => {
     return new Promise((resolve, reject) => {
 
-        Employee.find({ department: department }).lean().exec()
-        .then((data) => {
-            resolve(data);
-
-        }).catch((error) => {
-            reject("No results returned.");
-        });
+        Department.deleteOne({ departmentId: delId })
+            .exec()
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject("Unable to delete department.");
+                });
     });
 };
 
-module.exports.getEmployeesByManager = function (manager) {
+module.exports.addDepartment = (departmentData) => {
+
     return new Promise((resolve, reject) => {
-
-        Employee.find({ employeeManagerNum: manager }).lean().exec()
-        .then((data) => {
-            resolve(data);
-
-        }).catch((error) => {
-            reject("No results returned.");
-        });
-    });
-};
-
-module.exports.getManagers = function () {
-    return new Promise(function (resolve, reject) {
-        reject();
-    });
-};
-
-module.exports.updateEmployee = function (employeeData) {
-
-    employeeData.isManager = (employeeData.isManager) ? true : false;
-
-    return new Promise(function (resolve, reject) {
-        for (const prop in employeeData) {
-            if (employeeData[prop] == "") {
-                employeeData[prop] = null;
-            }
-        }
-
-        Employee.updateOne({employeeNum: employeeData.employeeNum},
-             {firstName: employeeData.firstName,
-             lastName: employeeData.lastName,
-             email: employeeData.email,
-             SSN: employeeData.SSN,
-             addressStreet: employeeData.addressStreet,
-             addressCity: employeeData.addressCity,
-             addressState: employeeData.addressState,
-             addressPostal: employeeData.addressPostal,
-             maritalStatus: employeeData.maritalStatus,
-             isManager: employeeData.isManager,
-             employeeManagerNum: employeeData.employeeManagerNum,
-             status: employeeData.status,
-             hireDate: employeeData.hireDate,
-             author: employeeData.author,
-             department: employeeData.department}
-             ).then(() => {
-            resolve();
-
-        }).catch((error) => {
-            reject("Unable to update employee.");
-        });
-    });
-};
-
-module.exports.deleteEmployeeByNum = function (empNum) {
-    return new Promise((resolve, reject) => {
-
-        Employee.deleteOne({ employeeNum: empNum }).exec()
-        .then(() => {
-            resolve();
-
-        }).catch((error) => {
-            reject("Unable to delete employee.");
-        });
-    });
-};
-
-module.exports.getDepartments = function () {
-    return new Promise((resolve, reject) => {
-
-        Department.find({}).lean().exec()
-        .then((data) => {
-            resolve(data);
-
-        }).catch((error) => {
-            reject("No results returned.");
-        });
-        
-    });
-}
-
-module.exports.getDepartmentById = function (id) {
-    return new Promise((resolve, reject) => {
-
-        Department.find({ departmentId: id }).lean().exec()
-        .then((data) => {
-            resolve(data[0]);
-
-        }).catch((error) => {
-            reject("No results returned.");
-        });
-    });
-};
-
-module.exports.deleteDepartmentById = function (id) {
-    return new Promise((resolve, reject) => {
-
-        Department.deleteOne({ departmentId: id }).exec()
-        .then(() => {
-            resolve();
-
-        }).catch((error) => {
-            reject("Unable to delete department.");
-        });
-    });
-};
-
-module.exports.addDepartment = function (departmentData) {
-
-    return new Promise(function (resolve, reject) {
 
         for (const prop in departmentData) {
             if (departmentData[prop] == "") {
@@ -225,29 +253,30 @@ module.exports.addDepartment = function (departmentData) {
         }
 
         Department.create(departmentData)
-        .then(() => {
-            resolve();
-
-        }).catch((error) => {
-            reject("Unable to create department.");
-        });
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                reject("Unable to create department.");
+            });
     });
 
 };
 
-module.exports.updateDepartment = function (departmentData) {
+module.exports.updateDepartment = (departmentData) => {
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         for (const prop in departmentData) {
             if (departmentData[prop] == "") {
                 departmentData[prop] = null;
             }
         }
 
-        Department.updateOne({departmentId: departmentData.departmentId}, {departmentName: departmentData.departmentName}).then(() => {
+        Department.updateOne({departmentId: departmentData.departmentId}, {departmentName: departmentData.departmentName})
+        .then(() => {
             resolve();
-
-        }).catch((error) => {
+        })
+        .catch((error) => {
             reject("Unable to update department.");
         });
     });
