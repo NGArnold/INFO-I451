@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 // connect to Your MongoDB Atlas Database
 mongoose.connect("mongodb+srv://luakitch:assignment4@assignments.zccsh.mongodb.net/Assignments?retryWrites=true&w=majority");
 
+
 const employeeSchema = new Schema({
     employeeNum: Number,
     firstName: String,
@@ -25,23 +26,16 @@ const employeeSchema = new Schema({
 const departmentSchema = new Schema({
     departmentId: Number,
     departmentName: String
-})
+});
 
 const Employee = mongoose.model('Employee', employeeSchema);
 const Department = mongoose.model('Department', departmentSchema);
 
-
-module.exports.initialize = function () {
-    return new Promise((resolve, reject) => {
-        resolve();
-    });
-}
-
 module.exports.getAllEmployees = function () {
     return new Promise((resolve, reject) => {
 
-        Employee.find({}).exec()
-        .then((err, data) => {
+        Employee.find({}).lean().exec()
+        .then((data) => {
             resolve(data);
         }).catch((error) => {
             reject("No results returned.");
@@ -52,6 +46,7 @@ module.exports.getAllEmployees = function () {
 module.exports.addEmployee = function (employeeData) {
 
     employeeData.isManager = (employeeData.isManager) ? true : false;
+    employeeData.employeeNum = Math.floor(1000 + Math.random() * 8999);
 
     return new Promise(function (resolve, reject) {
 
@@ -60,24 +55,22 @@ module.exports.addEmployee = function (employeeData) {
                 employeeData[prop] = null;
             }
         }
-
-        Employee.create({employeeData})
-        .then((err, data) => {
-            resolve(data);
-
-        }).catch((error) => {
-            reject("Unable to create employee.");
-        });
+            Employee.create(employeeData)
+            .then(() => {
+                resolve();
+            }).catch((error) => {
+                reject("Unable to create employee.");
+            });
     });
-
+    
 };
 
 
 module.exports.getEmployeeByNum = function (num) {
     return new Promise((resolve, reject) => {
 
-        Employee.find({ employeeNum: num }).exec()
-        .then((err, data) => {
+        Employee.find({ employeeNum: num }).lean().exec()
+        .then((data) => {
             resolve(data[0]);
 
         }).catch((error) => {
@@ -88,9 +81,9 @@ module.exports.getEmployeeByNum = function (num) {
 
 module.exports.getEmployeesByStatus = function (status) {
     return new Promise((resolve, reject) => {
-
-        Employee.find({ status: status }).exec()
-        .then((err, data) => {
+        
+        Employee.find({ status: status }).lean().exec()
+        .then((data) => {
             resolve(data);
 
         }).catch((error) => {
@@ -103,8 +96,8 @@ module.exports.getEmployeesByStatus = function (status) {
 module.exports.getEmployeesByDepartment = function (department) {
     return new Promise((resolve, reject) => {
 
-        Employee.find({ department: department }).exec()
-        .then((err, data) => {
+        Employee.find({ department: department }).lean().exec()
+        .then((data) => {
             resolve(data);
 
         }).catch((error) => {
@@ -116,8 +109,8 @@ module.exports.getEmployeesByDepartment = function (department) {
 module.exports.getEmployeesByManager = function (manager) {
     return new Promise((resolve, reject) => {
 
-        Employee.find({ employeeManagerNum: manager }).exec()
-        .then((err, data) => {
+        Employee.find({ employeeManagerNum: manager }).lean().exec()
+        .then((data) => {
             resolve(data);
 
         }).catch((error) => {
@@ -132,10 +125,6 @@ module.exports.getManagers = function () {
     });
 };
 
-
-
-
-
 module.exports.updateEmployee = function (employeeData) {
 
     employeeData.isManager = (employeeData.isManager) ? true : false;
@@ -147,9 +136,23 @@ module.exports.updateEmployee = function (employeeData) {
             }
         }
 
-        Employee.updateOne({
-            employeeNum: employeeData.employeeNum
-        }).then(() => {
+        Employee.updateOne({employeeNum: employeeData.employeeNum},
+             {firstName: employeeData.firstName,
+             lastName: employeeData.lastName,
+             email: employeeData.email,
+             SSN: employeeData.SSN,
+             addressStreet: employeeData.addressStreet,
+             addressCity: employeeData.addressCity,
+             addressState: employeeData.addressState,
+             addressPostal: employeeData.addressPostal,
+             maritalStatus: employeeData.maritalStatus,
+             isManager: employeeData.isManager,
+             employeeManagerNum: employeeData.employeeManagerNum,
+             status: employeeData.status,
+             hireDate: employeeData.hireDate,
+             author: employeeData.author,
+             department: employeeData.department}
+             ).then(() => {
             resolve();
 
         }).catch((error) => {
@@ -162,8 +165,8 @@ module.exports.deleteEmployeeByNum = function (empNum) {
     return new Promise((resolve, reject) => {
 
         Employee.deleteOne({ employeeNum: empNum }).exec()
-        .then((err, data) => {
-            resolve(data);
+        .then(() => {
+            resolve();
 
         }).catch((error) => {
             reject("Unable to delete employee.");
@@ -174,21 +177,22 @@ module.exports.deleteEmployeeByNum = function (empNum) {
 module.exports.getDepartments = function () {
     return new Promise((resolve, reject) => {
 
-        Department.find({})
-        .then((err, data) => {
+        Department.find({}).lean().exec()
+        .then((data) => {
             resolve(data);
 
         }).catch((error) => {
             reject("No results returned.");
         });
+        
     });
 }
 
 module.exports.getDepartmentById = function (id) {
     return new Promise((resolve, reject) => {
 
-        Department.find({ departmentId: id }).exec()
-        .then((err, data) => {
+        Department.find({ departmentId: id }).lean().exec()
+        .then((data) => {
             resolve(data[0]);
 
         }).catch((error) => {
@@ -201,8 +205,8 @@ module.exports.deleteDepartmentById = function (id) {
     return new Promise((resolve, reject) => {
 
         Department.deleteOne({ departmentId: id }).exec()
-        .then((err, data) => {
-            resolve(data);
+        .then(() => {
+            resolve();
 
         }).catch((error) => {
             reject("Unable to delete department.");
@@ -220,9 +224,9 @@ module.exports.addDepartment = function (departmentData) {
             }
         }
 
-        Department.create({departmentData})
-        .then((err, data) => {
-            resolve(data);
+        Department.create(departmentData)
+        .then(() => {
+            resolve();
 
         }).catch((error) => {
             reject("Unable to create department.");
@@ -240,9 +244,7 @@ module.exports.updateDepartment = function (departmentData) {
             }
         }
 
-        Department.updateOne({
-            departmentId: departmentData.departmentId
-        }).then(() => {
+        Department.updateOne({departmentId: departmentData.departmentId}, {departmentName: departmentData.departmentName}).then(() => {
             resolve();
 
         }).catch((error) => {
