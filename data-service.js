@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 // connect to Your MongoDB Atlas Database
-mongoose.connect("mongodb+srv://luakitch:assignment4@assignments.zccsh.mongodb.net/Assignments?retryWrites=true&w=majority");
+mongoose.connect("");
 
 
 const employeeSchema = new Schema({
