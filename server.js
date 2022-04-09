@@ -8,10 +8,10 @@ const app = express();
 const mongoose = require("mongoose");
 
 
-const HTTP_PORT = process.env.PORT || 8030;
+const HTTP_PORT = process.env.PORT || 8080;
 
 app.listen(HTTP_PORT, function () {
-    console.log('Node.js listening on port ' + HTTP_PORT);
+    console.log('Node.js listening on port: ' + HTTP_PORT);
 });
 
 app.engine('.hbs', exphbs.engine({
