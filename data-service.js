@@ -199,10 +199,10 @@ module.exports.updateEmployee = (employeeData) => {
 });
 };
 
-module.exports.deleteEmployeeByNum = (delEmpNum) => {
+module.exports.deleteEmployeeByNum = (empNum) => {
     return new Promise((resolve, reject) => {
 
-        Employee.deleteOne({ employeeNum: delEmpNum })
+        Employee.deleteOne({ employeeNum: empNum })
         .exec()
             .then(() => {
                 resolve();
